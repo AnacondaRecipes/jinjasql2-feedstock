@@ -1,0 +1,61 @@
+{% set name = "jinjasql2" %}
+{% set version = "0.1.11" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  # Replace the url when the release will be available on PyPi
+  url: https://github.com/pythonutilities/jinjasql/archive/refs/tags/{{ version }}.tar.gz
+  sha256: d722bdfb3274063f62035fad76393be0a6c4607d4d3a809d844ba6bc56d9aaea
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python
+    - jinja2 >=2.11.3
+
+test:
+  imports:
+    - jinjasql
+  source_files:
+    - tests/
+    - run_tests
+  requires:
+    - pip
+    - pytest
+    - pyyaml
+    - sqlalchemy
+  commands:
+    - pip check
+    # testcontainers is required by https://github.com/pythonutilities/jinjasql/blob/0.1.11/tests/__init__.py#L4
+    # but we skip test_real_database.py that require it
+    - pip install testcontainers
+    # Ignore test_real_database.py because the conda main channel doesn't have the testcontainers package
+    # and we aren't able to run docker containers with PostrgeSQL and MySQL
+    # Ignore test_django.py as it's only for Python <3.4, see https://github.com/pythonutilities/jinjasql/blob/0.1.11/tests/test_django.py#L3
+    - pytest tests -vv -k "not test_function" --ignore=tests/test_django.py --ignore=tests/test_real_database.py
+
+about:
+  home: https://github.com/pythonutilities/jinjasql
+  dev_url: https://github.com/pythonutilities/jinjasql
+  doc_url: https://github.com/pythonutilities/jinjasql
+  summary: Generate SQL Queries and Corresponding Bind Parameters using a Jinja2 Template
+  description: |
+    Generate SQL Queries and Corresponding Bind Parameters using a Jinja2 Template
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - skupr-anaconda
