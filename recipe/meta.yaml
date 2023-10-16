@@ -38,7 +38,7 @@ test:
   commands:
     - pip check
     # testcontainers is required by https://github.com/pythonutilities/jinjasql/blob/0.1.11/tests/__init__.py#L4
-    # but we skip test_real_database.py that require it
+    # but we skip testing test_real_database.py
     - pip install testcontainers
     # Ignore test_real_database.py because the conda main channel doesn't have the testcontainers package
     # and we aren't able to run docker containers with PostrgeSQL and MySQL
